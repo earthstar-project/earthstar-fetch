@@ -18,6 +18,9 @@ Basic URL format:
 ```
 earthstar://+gardening.xxxxxxxxx/path/to/key.json
 ```
+```
+earthstar://WORKSPACE/PATH?QUERY
+```
 
 GET document
 
@@ -41,15 +44,34 @@ GET an identity 'name' - Generate an identity
 ```JavaScript
 // Specify `@XXXX` where `X` is a lowercase ascii character
 // This will generate and store a keypair for this identity
-const res = fetch('earthstar://@xmpl')
+const res = await fetch('earthstar://@xmpl')
 
 // Get the generated address for your identity
-const {address} = await res.json()
+const {address, secret} = await res.json()
 
 address === '@xmpl.xxxxxxx'
+secret === 'aasdkjasdkjasdkjaldj'
+
+// You can also pass in the full address
+const res = await fetch('earthstar://@xmpl.xxxxxx/')
 ```
 
-POST some data, sign with identity
+GET your list of identities
+
+```JavaScript
+// Returns a list of addresses
+const res = await fetch('earthstar://@/`)
+
+const addresses = await res.json()
+
+addresses === [
+'@exm1.xxxxxx',
+'@helo.yyyyyy',
+'@uget.zzzzzz'
+]
+```
+
+POST some data, to a workspace, sign with identity
 
 ```JavaScript
 // It's good practice to use a file extension so that the proper mime type gets set
@@ -60,7 +82,9 @@ const res = await fetch('earthstar://+gardening.xxxxx/example.json', {
   }),
   headers: {
     // Use the identity address you got before to sign your update
-    "earthstar-author": "@xmpl.xxxxxx"
+    "earthstar-author": "@xmpl.xxxxxx",
+    // Optionally pass in the secret from somewhere else
+    "earthstar-secret": "asdasdasd"
   }
 })
 
@@ -72,10 +96,27 @@ res.headers.get('earthstar-author') === '@xmpl.xxxxxxxx'
 res.headers.get('earthstar-signature') === 'xxxxxxx'
 ```
 
-POST some data scoped to your identity (others cant update)
+GET the identities in a workspace
 
 ```JavaScript
-// Note the `/~@xml,
+const res = await fetch('earthstar://+gardening.xxxx/@')
+
+const addresses = await res.json()
+
+addresses === [
+'@exm1.xxxxxx',
+'@helo.yyyyyy',
+'@uget.zzzzzz'
+]
+```
+
+POST some data scoped to your identity (others can't update)
+
+```JavaScript
+// Note the `/~@xml, which makes the path only writable by you
+// Also note the file extension which gets used as a `mime type` to interpret the contents
+// Extensions that are usually used for text will result in data encoded as utf8
+// Extensions that are usually used for binary will be base64 encoded when added to the content
 const res = await fetch('earthstar://+gardening.xxxxx/example/~@xmpl.xxxxx/profile.json', {
   method: 'post',
   body: JSON.stringify({
@@ -88,17 +129,31 @@ const res = await fetch('earthstar://+gardening.xxxxx/example/~@xmpl.xxxxx/profi
 })
 ```
 
+GET the list of workspaces that have been loaded so far
+
+```JavaScript
+cont res = await fetch('earthstar://+/')
+
+const workspaces = await res.json()
+
+workspaces === [
+'+example.xxxxx',
+'+other.yyyyyyy',
+'+somthing.zzzz'
+]
+```
+
 Search - A get request on a prefix with querystring parameters
 
 Search options can be placed in the queryString section of the URL, more info can be found in the [QueryOpts interface](https://github.com/earthstar-project/earthstar/blob/master/src/util/types.ts#L194).
 
 ```JavaScript
-// If you use a `/` at the end of your path, it'll do a search for things inside that path
-// This is equivalent to the `path` parameter in QueryOpts
+// If you use a `/` at the end of your path, it'll do a search for things starting with that path
+// This is equivalent to the `pathStartsWith` parameter in QueryOpts
 const res = await fetch('earthstar://+gardening.xxxxx/example/')
 
 / If you use a `*` at the end of your path, it'll do a search for paths tht start with that prefix
-// This is equivalent to the `pathPrefix` parameter in QueryOpts
+// This is equivalent to the `pathStartsWith` parameter in QueryOpts
 const res = await fetch('earthstar://+gardening.xxxxx/example*')
 
 const paths = await res.json()
@@ -108,13 +163,13 @@ paths === [
   'foo/bar/baz.html'
 ]
 
-// Get the full documents as JSON by specifying the `documents` querystring
-const res = await fetch('earthstar://+gardening.xxxxx/example/?documents')
+// Get the full documents as JSON by specifying the `type=document` querystring param
+const res = await fetch('earthstar://+gardening.xxxxx/example/?type=document')
 
 const [{format, content, path, timestamp, signature, ...etc}) = await res.json()
 
 // Concatentate the contents of all the results of your query
-const res = await fetch('earthstar://+gardeming.xxxxx/example.html/*?contents')
+const res = await fetch('earthstar://+gardeming.xxxxx/example.html/?contents')
 
 const concatenatedText = await res.text()
 ```
