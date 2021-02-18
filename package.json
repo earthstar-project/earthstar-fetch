@@ -1,0 +1,24 @@
+{
+  "name": "earthstar-fetch",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/earthstar-project/earthstar-fetch.git"
+  },
+  "keywords": [
+    "earthstar",
+    "p2p",
+    "fetch"
+  ],
+  "author": "rangermauve <ranger@mauve.moe> (https://mauve.moe/)",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/earthstar-project/earthstar-fetch/issues"
+  },
+  "homepage": "https://github.com/earthstar-project/earthstar-fetch#readme"
+}
