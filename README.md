@@ -183,3 +183,15 @@ const res = await fetch('earthstar://+gardeming.xxxxx/example/')
 const index = await res.txt()
 ```
 
+SYNC with a pub URL
+
+```JavaScript
+// Specify the workspace you wish to sync out
+const res = await fetch('earthstar://+gardening.xxx', {
+  method: 'sync',
+  // Specify the URL of the pub you wish to sync with
+  body: 'https://my.pub'
+})
+
+// TODO: Unsync / live? Follow up with connamon's comments on discord
+```
