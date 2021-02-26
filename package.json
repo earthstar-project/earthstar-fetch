@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "ts-standard --fix"
   },
   "repository": {
     "type": "git",
@@ -22,12 +23,15 @@
   },
   "homepage": "https://github.com/earthstar-project/earthstar-fetch#readme",
   "dependencies": {
+    "@types/mime": "^2.0.3",
     "earthstar": "^6.2.1",
-    "make-fetch": "^2.3.0"
+    "make-fetch": "^2.3.0",
+    "mime": "^2.5.2"
   },
   "devDependencies": {
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
+    "ts-standard": "^10.0.0",
     "tsc": "^1.20150623.0"
   }
 }
